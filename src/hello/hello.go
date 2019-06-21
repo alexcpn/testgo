@@ -8,16 +8,14 @@ import (
 	"time"
 )
 
-func insert_rows(numberofrows int, session gocql.Session) {
+func insert_rows(numberofrows int, session *gocql.Session) {
 
-	var imsi string
-	var msisdn string
-	var opc string
+	
 	imsi_n := 132312321
 
 	for i := 0; i < numberofrows; i++ {
 
-		imsi := strconv.Itoa(132312321 + i)
+		imsi := strconv.Itoa(imsi_n + i)
 		opc := "adaddddddddadaasdass" + imsi
 		msisdn := "7777" + imsi
 
@@ -35,7 +33,7 @@ func timeTrack(start time.Time, name string) {
 	log.Printf("%s took %s", name, elapsed)
 }
 
-func fetch_rows(numberofrows int, session gocql.Session) {
+func fetch_rows(numberofrows int, session *gocql.Session) {
 
 	defer timeTrack(time.Now(), "fetch_rows")
 
@@ -70,7 +68,7 @@ func main() {
 	}
 
 	insert_rows(10, session)
-	fetch_rows(10, seesion)
+	fetch_rows(10, session)
 
 	fmt.Println("Connected closed")
 }
