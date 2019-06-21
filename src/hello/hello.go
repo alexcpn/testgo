@@ -5,16 +5,17 @@ import (
 	"github.com/gocql/gocql"
 	log "github.com/sirupsen/logrus"
 	"strconv"
+	"time"
 )
 
-func insert_rows(numberofrows int, session interface{}) {
+func insert_rows(numberofrows int, session Session) {
 
 	var imsi string
 	var msisdn string
 	var opc string
 	imsi_n := 132312321
 
-	for i := 0; i < nunberofrows; i++ {
+	for i := 0; i < numberofrows; i++ {
 
 		imsi := strconv.Itoa(132312321 + i)
 		opc := "adaddddddddadaasdass" + imsi
@@ -34,7 +35,7 @@ func timeTrack(start time.Time, name string) {
 	log.Printf("%s took %s", name, elapsed)
 }
 
-func fetch_rows(numberofrows int, session interface{}) {
+func fetch_rows(numberofrows int, session Session) {
 
 	defer timeTrack(time.Now(), "fetch_rows")
 
