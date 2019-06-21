@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gocql/gocql"
 	log "github.com/sirupsen/logrus"
+	import "strconv"
 )
 
 func insert_rows(numberofrows int, session interface{}) {
@@ -16,11 +17,12 @@ func insert_rows(numberofrows int, session interface{}) {
 	for i := 0; i < nunberofrows; i++ {
 
 		imsi := strconv.Itoa(132312321 + i)
+		opc := "adaddddddddadaasdass" + imsi
+		msisdn := "7777" + imsi
 
 		//Add an etry to the table
-
 		if err := session.Query("INSERT INTO  sm.sim_inventory (imsi, msisdn, opc) VALUES (?, ?, ?)",
-			"132312321", "7777777", "adsdasdas1").Exec(); err != nil {
+			imsi, msisdn, opc).Exec(); err != nil {
 			log.Fatalf("Could not Insert to cassandra : %v", err)
 		}
 
@@ -35,6 +37,10 @@ func timeTrack(start time.Time, name string) {
 func fetch_rows(numberofrows int, session interface{}) {
 
 	defer timeTrack(time.Now(), "fetch_rows")
+
+	var imsi string
+	var msisdn string
+	var opc string
 
 	// Fetch multiple rows and run process over them
 	iter := session.Query("SELECT imsi, msisdn,opc FROM sm.sim_inventory LIMIT ? ", numberofrows).Iter()
