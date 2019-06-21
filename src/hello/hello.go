@@ -12,8 +12,7 @@ func insert_rows(numberofrows int, session interface{}){
 	var opc string
 	imsi_n := 132312321
 
-	for i: =0; i < nunberofrows; i++{
-
+	for (i: =0; i < nunberofrows; i++) {
 
 		imsi := strconv.Itoa(132312321 +i)
 		
