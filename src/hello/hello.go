@@ -2,13 +2,13 @@ package main
 
 import (
 	"fmt"
-	"github.com/gocql/gocql"
+	gocql "github.com/gocql/gocql"
 	log "github.com/sirupsen/logrus"
 	"strconv"
 	"time"
 )
 
-func insert_rows(numberofrows int, session Session) {
+func insert_rows(numberofrows int, session gocql.Session) {
 
 	var imsi string
 	var msisdn string
@@ -35,7 +35,7 @@ func timeTrack(start time.Time, name string) {
 	log.Printf("%s took %s", name, elapsed)
 }
 
-func fetch_rows(numberofrows int, session Session) {
+func fetch_rows(numberofrows int, session gocql.Session) {
 
 	defer timeTrack(time.Now(), "fetch_rows")
 
