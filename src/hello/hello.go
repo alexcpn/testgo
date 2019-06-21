@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/gocql/gocql"
 	log "github.com/sirupsen/logrus"
-	import "strconv"
+	"strconv"
 )
 
 func insert_rows(numberofrows int, session interface{}) {
