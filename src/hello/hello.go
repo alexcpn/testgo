@@ -1,4 +1,5 @@
 package main
+//alexcpn@gmail.com
 
 import (
 	"fmt"
@@ -6,6 +7,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"strconv"
 	"time"
+	"flag"
 )
 
 func timeTrack(start time.Time, name string) {
@@ -48,6 +50,7 @@ func dropTable(session *gocql.Session) {
 }
 func insertRows(numberofrows int, session *gocql.Session) {
 
+	defer timeTrack(time.Now(), "insertRows Time")
 	imsiN := 132312321
 
 	for i := 0; i < numberofrows; i++ {
@@ -68,26 +71,40 @@ func insertRows(numberofrows int, session *gocql.Session) {
 
 func fetchRows(numberofrows int, session *gocql.Session) {
 
-	defer timeTrack(time.Now(), "fetch_rows")
+	defer timeTrack(time.Now(), "fetchRows Time")
 
+	// Fetch multiple rows and run process over them
+	iter := session.Query("SELECT imsi, msisdn,opc FROM sm.sim_inventory LIMIT ? ", numberofrows).Iter()
+	
 	var imsi string
 	var msisdn string
 	var opc string
 
-	// Fetch multiple rows and run process over them
-	iter := session.Query("SELECT imsi, msisdn,opc FROM sm.sim_inventory LIMIT ? ", numberofrows).Iter()
+	counter :=0
+
 	for iter.Scan(&imsi, &msisdn, &opc) {
-		log.Printf("Iter imsi: %v", imsi)
-		log.Printf("Iter msisdn: %v", msisdn)
-		log.Printf("Iter opc: %v", opc)
+		//log.Printf("Iter imsi: %v", imsi)
+		//log.Printf("Iter msisdn: %v", msisdn)
+		//log.Printf("Iter opc: %v", opc)
+		counter++
 	}
+	log.Printf("Number of rows read  %v", counter)
 	if err := iter.Close(); err != nil {
 		log.Fatalf("Could not Query table : %v", err)
 	}
 
 }
 func main() {
-	fmt.Println("Hello, World -Test  Cassandra")
+	//go install hello && ./bin/hello -ni 100 -nq 10 -del=false
+	fmt.Println("Hello, World -Test  Cassandra Pagination")
+	numberOfRowsToInsert := flag.Int("ni", 1, "Number of rows to insert")
+	numberOfRowsToQuery := flag.Int("nq", 1, "Number of rows to Query")
+	deleteTable := flag.Bool("del", false, "Delete table after test")
+
+	flag.Parse()
+	log.Printf("Number of Rows to Insert %v",*numberOfRowsToInsert)
+	log.Printf("Number of Rows to Query %v",*numberOfRowsToQuery)
+	log.Printf("Delete Table after tests %v",*deleteTable)
 
 	cluster := gocql.NewCluster("mycassandra")
 	cluster.Keyspace = "sm"
@@ -99,10 +116,14 @@ func main() {
 	} else {
 		log.Info("Successfully connected")
 	}
-	dropTable(session)
+	
 	createTable(session)
-	insertRows(10, session)
-	fetchRows(10, session)
+	insertRows(*numberOfRowsToInsert, session)
+	fetchRows(*numberOfRowsToQuery, session)
+	if *deleteTable {
+		log.Info("Going to Drop the table")
+		dropTable(session)
+	}
 
 	fmt.Println("Connected closed")
 }
