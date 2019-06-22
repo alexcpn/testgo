@@ -8,14 +8,51 @@ import (
 	"time"
 )
 
-func insert_rows(numberofrows int, session *gocql.Session) {
+func timeTrack(start time.Time, name string) {
+	elapsed := time.Since(start)
+	log.Printf("%s took %s", name, elapsed)
+}
 
-	
-	imsi_n := 132312321
+func createTable(session *gocql.Session) {
+		
+	/*
+	createNamespaceStatement := `create keyspace sm with 
+	replication = {'class':'SimpleStrategy','replication_factor':1};`
+
+	if err := session.Query(createNamespaceStatement).Exec(); err != nil {
+		log.Warning("Could not Create Table : %v", err)
+		 
+	}*/
+
+	createTableStatement := `CREATE TABLE IF NOT EXISTS sm.sim_inventory (    
+		imsi text PRIMARY KEY,
+		msisdn text,
+		opc text);`
+
+	if err := session.Query(createTableStatement).Exec(); err != nil {
+		log.Fatalf("Could not Create Table : %v", err)
+		return 
+	}
+	log.Debug("Created Table")
+
+}
+
+func dropTable(session *gocql.Session) {
+
+	removeTableStmt := fmt.Sprintf("DROP TABLE IF EXISTS %v", "sm.sim_inventory")
+	if err := session.Query(removeTableStmt).Exec(); err != nil {
+		log.Fatalf("Could not Drop Keyspace : %v", err)
+	}
+	log.Debug("Dropped Keyspace")
+
+}
+func insertRows(numberofrows int, session *gocql.Session) {
+
+	imsiN := 132312321
 
 	for i := 0; i < numberofrows; i++ {
 
-		imsi := strconv.Itoa(imsi_n + i)
+		imsi := strconv.Itoa(imsiN + i)
 		opc := "adaddddddddadaasdass" + imsi
 		msisdn := "7777" + imsi
 
@@ -28,12 +65,8 @@ func insert_rows(numberofrows int, session *gocql.Session) {
 	}
 
 }
-func timeTrack(start time.Time, name string) {
-	elapsed := time.Since(start)
-	log.Printf("%s took %s", name, elapsed)
-}
 
-func fetch_rows(numberofrows int, session *gocql.Session) {
+func fetchRows(numberofrows int, session *gocql.Session) {
 
 	defer timeTrack(time.Now(), "fetch_rows")
 
@@ -66,9 +99,10 @@ func main() {
 	} else {
 		log.Info("Successfully connected")
 	}
-
-	insert_rows(10, session)
-	fetch_rows(10, session)
+	dropTable(session)
+	createTable(session)
+	insertRows(10, session)
+	fetchRows(10, session)
 
 	fmt.Println("Connected closed")
 }
