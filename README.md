@@ -1,4 +1,3 @@
-# testgo
 ## Gocql Cassandra - Illustrating secondary indexes for pagination
 
 # Short Summary
@@ -16,6 +15,7 @@ Since we can query on a secondary index each page can be queried independently.
 Code is self explanatory and here - https://github.com/alexcpn/testgo
 
 Note caution on how to use secondary index properly abound. Please check it. In this use case I am hoping that i am using it properly. Have not tested with multiple clusters
+https://stackoverflow.com/questions/49075702/cassandra-pagination-and-token-function-selecting-a-partition-key/56731833?noredirect=1#comment100024615_56731833
 
 
 # Results
